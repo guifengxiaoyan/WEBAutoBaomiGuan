@@ -386,22 +386,7 @@
                 <span id="currentUser" style="font-size: 0.7em; color: #666; margin-left: 10px;"></span>
             </h2>
 
-            <div class="stats-grid">
-                <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                    <div class="stat-value" id="studyStatus">-</div>
-                    <div class="stat-label">学习状态</div>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
-                    <div class="stat-value" id="examStatus">-</div>
-                    <div class="stat-label">考试状态</div>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #DA22FF 0%, #9733EE 100%);">
-                    <div class="stat-value" id="progressRate">-</div>
-                    <div class="stat-label">完成率</div>
-                </div>
-            </div>
-
-            <div class="action-buttons">
+            <div class="action-buttons" style="margin-bottom: 20px;">
                 <button class="btn btn-success" onclick="studyAllCourses()">
                     开始学习和考试
                 </button>
@@ -409,9 +394,6 @@
                     刷新进度
                 </button>
             </div>
-
-            <h3 style="margin: 30px 0 15px 0; color: #333;">学习进度详情</h3>
-            <div id="progressDetails" style="margin-top: 20px;"></div>
 
             <div id="logArea" class="log-area"></div>
         </div>
@@ -588,52 +570,8 @@
         }
 
         function displayProgress(courses) {
-            const container = document.getElementById('progressDetails');
-            container.innerHTML = '';
-
-            if (courses.length === 0) {
-                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">暂无课程数据</p>';
-                document.getElementById('studyStatus').textContent = '-';
-                document.getElementById('examStatus').textContent = '-';
-                return;
-            }
-
-            let completedCount = 0;
-            let html = '<div style="display: grid; gap: 15px;">';
-
-            courses.forEach((course, index) => {
-                const isComplete = course.isComplete || false;
-                const name = course.lessonName || course.courseName || course.name || `课程 ${index + 1}`;
-                
-                if (isComplete) completedCount++;
-
-                const progressColor = isComplete ? '#38ef7d' : '#f45c43';
-                const statusText = isComplete ? '已完成' : '未完成';
-                const statusClass = isComplete ? 'status-completed' : 'status-pending';
-
-                html += `
-                    <div style="padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid ${progressColor};">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #333; flex: 1;">
-                                ${isComplete ? '✓' : '◦'} ${name}
-                            </div>
-                            <span class="course-status ${statusClass}" style="padding: 5px 12px; border-radius: 15px; font-size: 0.85em;">
-                                ${statusText}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            html += '</div>';
-            container.innerHTML = html;
-
-            // 更新状态
-            const totalCourses = courses.length;
-            document.getElementById('totalCourses') && (document.getElementById('totalCourses').textContent = totalCourses);
-            document.getElementById('studyStatus').textContent = completedCount === totalCourses ? '已完成' : '学习中';
-            document.getElementById('examStatus').textContent = completedCount === totalCourses ? '待定' : '未开始';
-            document.getElementById('progressRate').textContent = `${Math.round((completedCount / totalCourses) * 100)}%`;
+            console.log('课程数据:', courses);
+            log(`当前课程数：${courses.length}`, 'info');
         }
 
         async function loadProgress() {
@@ -692,10 +630,6 @@
             showLoading(btn, true);
 
             log('开始学习和考试...', 'info');
-            
-            // 更新状态显示
-            document.getElementById('studyStatus').textContent = '学习中...';
-            document.getElementById('examStatus').textContent = '等待中...';
 
             try {
                 const response = await fetch('/api/course/study-all', {
@@ -708,19 +642,9 @@
                 if (data.success) {
                     showMessage('学习和考试完成！', 'success');
                     log(`课程学习：${data.data.study ? '✓ 成功' : '✗ 失败'}`, data.data.study ? 'success' : 'error');
-                    
-                    if (data.data.study) {
-                        document.getElementById('studyStatus').textContent = '已完成';
-                        document.getElementById('examStatus').textContent = '考试中...';
-                    }
-                    
                     if (data.data.exam !== undefined) {
                         log(`考试完成：${data.data.exam ? '✓ 成功' : '✗ 失败'}`, data.data.exam ? 'success' : 'error');
-                        if (data.data.exam) {
-                            document.getElementById('examStatus').textContent = '已完成';
-                        }
                     }
-                    
                     refreshProgress();
                 } else {
                     showMessage(data.message || '学习失败', 'error');
