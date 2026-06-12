@@ -12,8 +12,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt flask flask-cors
 
-# 复制应用代码
-COPY *.py index.html ./
+# 复制所有应用文件
+COPY app.py main.py config.py login.py course.py api_handlers.py ./
+COPY index.html ./
 
 # 暴露端口
 EXPOSE 3000
