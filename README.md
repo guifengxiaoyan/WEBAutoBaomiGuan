@@ -17,7 +17,7 @@ docker run -d \
   -v $(pwd)/credentials.json:/app/credentials.json \
   --name autobaomiguan \
   --restart unless-stopped \
-  guifengyan/autobaomiguan:latest
+  guifengxiaoyan/autobaomiguan:latest
 ```
 
 ### 2. 使用 docker-compose
@@ -29,7 +29,7 @@ version: '3.8'
 
 services:
   autobaomiguan:
-    image: guifengyan/autobaomiguan:latest
+    image: guifengxiaoyan/autobaomiguan:latest
     container_name: autobaomiguan
     ports:
       - "3000:3000"
